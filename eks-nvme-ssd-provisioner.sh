@@ -13,10 +13,10 @@ STRIDE=$((RAID_CHUNK_SIZE * 1024 / FILESYSTEM_BLOCK_SIZE))
 STRIPE_WIDTH=$((SSD_NVME_DEVICE_COUNT * STRIDE))
 
 # Checking if provisioning already happend
-if [[ "$(ls -A /pv-disks)" ]]
+if [[ "$(ls -A /var/lib/pv-disks)" ]]
 then
-  echo 'Volumes already present in "/pv-disks"'
-  echo -e "\n$(ls -Al /pv-disks | tail -n +2)\n"
+  echo 'Volumes already present in "/var/lib/pv-disks"'
+  echo -e "\n$(ls -Al /var/lib/pv-disks | tail -n +2)\n"
   echo "I assume that provisioning already happend, trying to assemble and mount!"
   case $SSD_NVME_DEVICE_COUNT in
   "0")
@@ -38,10 +38,10 @@ then
   if mount | grep "$DEVICE" > /dev/null; then
     echo "device $DEVICE appears to be mounted already"
   else
-    mount -o defaults,noatime,discard,nobarrier --uuid "$UUID" "/pv-disks/$UUID"
+    mount -o defaults,noatime,discard,nobarrier --uuid "$UUID" "/var/lib/pv-disks/$UUID"
   fi
-  ln -s "/pv-disks/$UUID" /nvme/disk || true
-  echo "Device $DEVICE has been mounted to /pv-disks/$UUID"
+  ln -s "/var/lib/pv-disks/$UUID" /nvme/disk || true
+  echo "Device $DEVICE has been mounted to /var/lib/pv-disks/$UUID"
   while sleep 3600; do :; done
 fi
 
@@ -70,10 +70,10 @@ case $SSD_NVME_DEVICE_COUNT in
 esac
 
 UUID=$(blkid -s UUID -o value "$DEVICE")
-mkdir -p "/pv-disks/$UUID"
-mount -o defaults,noatime,discard,nobarrier --uuid "$UUID" "/pv-disks/$UUID"
-ln -s "/pv-disks/$UUID" /nvme/disk
-echo "Device $DEVICE has been mounted to /pv-disks/$UUID"
+mkdir -p "/var/lib/pv-disks/$UUID"
+mount -o defaults,noatime,discard,nobarrier --uuid "$UUID" "/var/lib/pv-disks/$UUID"
+ln -s "/var/lib/pv-disks/$UUID" /var/lib/pv-disks/local-nvme
+echo "Device $DEVICE has been mounted to /var/lib/pv-disks/$UUID"
 echo "NVMe SSD provisioning is done and I will go to sleep now"
 
 while sleep 3600; do :; done

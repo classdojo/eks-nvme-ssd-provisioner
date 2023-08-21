@@ -41,7 +41,6 @@ then
   else
     mount -o defaults,noatime,discard,nobarrier --uuid "$UUID" "${TARGET_DIR}/$UUID"
   fi
-  ln -s "${TARGET_DIR}/$UUID" /nvme/disk || true
   echo "Device $DEVICE has been mounted to ${TARGET_DIR}/$UUID"
   while sleep 3600; do :; done
 fi

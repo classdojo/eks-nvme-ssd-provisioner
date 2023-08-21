@@ -15,7 +15,7 @@ aws ecr describe-repositories --repository-names "${ECR_NAME}" --no-paginate --o
         --no-paginate --output json --no-cli-pager 
 }
 
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 347708466071.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 347708466071.dkr.ecr.us-east-1.amazonaws.com || true
 COMPLETE_TAG="347708466071.dkr.ecr.us-east-1.amazonaws.com/${ECR_NAME}:${REPO_TAG}"
 
 docker buildx build \

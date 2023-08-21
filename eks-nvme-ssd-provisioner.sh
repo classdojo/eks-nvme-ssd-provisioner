@@ -11,11 +11,7 @@ RAID_CHUNK_SIZE=${RAID_CHUNK_SIZE:-512}  # Kilo Bytes
 FILESYSTEM_BLOCK_SIZE=${FILESYSTEM_BLOCK_SIZE:-4096}  # Bytes
 STRIDE=$((RAID_CHUNK_SIZE * 1024 / FILESYSTEM_BLOCK_SIZE))
 STRIPE_WIDTH=$((SSD_NVME_DEVICE_COUNT * STRIDE))
-
 TARGET_DIR="/var/lib/pv-disks"
-if [ -d "/host" ]; then
-  TARGET_DIR="/host/var/lib/pv-disks"
-fi
 
 # Checking if provisioning already happend
 if [[ "$(ls -A ${TARGET_DIR})" ]]
@@ -77,7 +73,11 @@ esac
 UUID=$(blkid -s UUID -o value "$DEVICE")
 mkdir -p "${TARGET_DIR}/$UUID"
 mount -o defaults,noatime,discard,nobarrier --uuid "$UUID" "${TARGET_DIR}/$UUID"
-ln -s "${TARGET_DIR}/$UUID" "${TARGET_DIR}/local-nvme"
+
+pushd "${TARGET_DIR}"
+ln -s "$UUID" "local-nvme"
+popd
+
 echo "Device $DEVICE has been mounted to ${TARGET_DIR}/$UUID"
 echo "NVMe SSD provisioning is done and I will go to sleep now"
 

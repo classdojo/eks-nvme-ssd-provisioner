@@ -5,4 +5,4 @@ COPY eks-nvme-ssd-provisioner.sh /usr/local/bin/
 
 ENTRYPOINT ["bash"]
 
-ARG ["-c", "eks-nvme-ssd-provisioner.sh 1> /dev/null"]
+CMD ["-c", "eks-nvme-ssd-provisioner.sh 1> /dev/null"]
